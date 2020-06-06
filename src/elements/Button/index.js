@@ -14,12 +14,28 @@ export default function Button(props) {
     if (props.onClick) props.onClick();
   };
 
+  if (props.isDisable || props.isLoading) {
+    if (props.isDisable) className.push("disabled");
+    return (
+      <span className={className.join(" ")} style={props.style}>
+        {props.isLoading ? (
+          <>
+            <span className="spinner-border spinner-border-sm mx-5" />
+            <span className="sr-only">Loading...</span>
+          </>
+        ) : (
+          props.children
+        )}
+      </span>
+    );
+  }
+
   if (props.type === "link") {
     if (props.isExternal) {
       return (
         <a
           href={props.href}
-          className={className.join("")}
+          className={className.join(" ")}
           style={props.style}
           target={props.target === "_blank" ? "_blank" : undefined}
           rel={props.target === "_blank" ? "noopener noreferrer" : undefined}
@@ -27,28 +43,38 @@ export default function Button(props) {
           {props.children}
         </a>
       );
+    } else {
+      return (
+        <Link
+          to={props.href}
+          className={className.join(" ")}
+          style={props.style}
+          onClick={onClick}
+        >
+          {props.children}
+        </Link>
+      );
     }
-  } else {
-    return (
-      <Link
-        to={props.href}
-        className={className.join("")}
-        style={props.style}
-        onClick={onClick}
-      >
-        {props.children}
-      </Link>
-    );
   }
 
-  return <div></div>;
+  return (
+    <button
+      className={className.join(" ")}
+      style={props.style}
+      onClick={onClick}
+    >
+      {props.children}
+    </button>
+  );
 }
 
 Button.propTypes = {
   type: propTypes.oneOf(["button", "link"]),
   onClick: propTypes.func,
+  href: propTypes.string,
   target: propTypes.string,
   className: propTypes.string,
+  isExternal: propTypes.bool,
   isDisable: propTypes.bool,
   isLoading: propTypes.bool,
   isSmall: propTypes.bool,
